@@ -1,13 +1,14 @@
 package com.example.brisknotes;
 
-import android.content.ContentProvider;
+import android.app.AlertDialog;
+import android.app.LoaderManager;
 import android.content.ContentValues;
+import android.content.CursorLoader;
+import android.content.DialogInterface;
+import android.content.Loader;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -15,40 +16,36 @@ import android.view.MenuItem;
 import android.widget.CursorAdapter;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
+import android.widget.Toast;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity
+        implements LoaderManager.LoaderCallbacks<Cursor>
+{
+    private CursorAdapter cursorAdapter;
 
-    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        insertNote("New Note");
-
-        //2: List of all columns
-        Cursor cursor = getContentResolver().query(NoteProvider.CONTENT_URI, DBOpenHelper.ALL_COLUMNS,
-                null, null, null, null);
-
-        // Only want the text column
         String[] from = {DBOpenHelper.NOTE_TEXT};
-        //A list of resource ids for Views or Controls that are going to be used to display the information
-        //The id of a TextView used in a layout file that's also delivered with the SDK
         int[] to = {android.R.id.text1};
-        //2: List that displays a single TextView, id being 1
-        CursorAdapter cursorAdapter = new SimpleCursorAdapter(this, android.R.layout.simple_list_item_1,
-                cursor, from, to, 0);
-        ListView list = findViewById(android.R.id.list);
+        cursorAdapter = new SimpleCursorAdapter(this,
+                android.R.layout.simple_list_item_1, null, from, to, 0);
+
+        ListView list = (ListView) findViewById(R.id.list);
         list.setAdapter(cursorAdapter);
+
+        getLoaderManager().initLoader(0, null, this);
+
     }
 
     private void insertNote(String noteText) {
         ContentValues values = new ContentValues();
         values.put(DBOpenHelper.NOTE_TEXT, noteText);
-        /* For the URI I'll use the Content URI constant from the provider, identifies the Content
-           Provider I want to communicate with */
-        Uri noteUri = getContentResolver().insert(NoteProvider.CONTENT_URI, values);
+        Uri noteUri = getContentResolver().insert(NoteProvider.CONTENT_URI,
+                values);
         Log.d("MainActivity", "Inserted note " + noteUri.getLastPathSegment());
     }
 
@@ -62,16 +59,72 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        switch (id) {
+            case R.id.action_create_sample:
+                insertSampleData();
+                break;
+            case R.id.action_delete_all:
+                deleteAllNotes();
+                break;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void deleteAllNotes() {
+
+        DialogInterface.OnClickListener dialogClickListener =
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int button) {
+                        if (button == DialogInterface.BUTTON_POSITIVE) {
+                            //Insert Data management code here
+                            getContentResolver().delete(
+                                    NoteProvider.CONTENT_URI, null, null
+                            );
+                            restartLoader();
+
+                            Toast.makeText(MainActivity.this,
+                                    getString(R.string.all_deleted),
+                                    Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                };
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage(getString(R.string.are_you_sure))
+                .setPositiveButton(getString(android.R.string.yes), dialogClickListener)
+                .setNegativeButton(getString(android.R.string.no), dialogClickListener)
+                .show();
+    }
+
+    //Tests how the UI handles different cases of notes
+    private void insertSampleData() {
+        insertNote("Simple note");
+        insertNote("Multi-line\nnote");
+        insertNote("Very long note with a lot of text that exceeds the width of the screen");
+        restartLoader();
+    }
+
+    private void restartLoader() {
+        getLoaderManager().restartLoader(0, null, this);
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        return new CursorLoader(this, NoteProvider.CONTENT_URI,
+                null, null, null, null);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
+        cursorAdapter.swapCursor(data);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+        cursorAdapter.swapCursor(null);
     }
 }
