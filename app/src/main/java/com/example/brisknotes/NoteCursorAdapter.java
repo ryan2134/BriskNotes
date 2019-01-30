@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CursorAdapter;
+import android.widget.TextView;
 
 public class NoteCursorAdapter extends CursorAdapter {
     public NoteCursorAdapter(Context context, Cursor c, int flags) {
@@ -27,7 +28,17 @@ public class NoteCursorAdapter extends CursorAdapter {
         //of the data as it's being returned.
         //A more effective way is to address the column by its name (DBOpenHelper.NOTE_TEXT)
         String noteText = cursor.getString(cursor.getColumnIndex(DBOpenHelper.NOTE_TEXT));
+        //Integer to handle the notes that have line feeds
+        //10 for ASCII value of a linefeed
+        int pos = noteText.indexOf(10);
 
+        //Found a linefeed
+        if(pos != -1){
+            noteText = noteText.substring(0, pos) + " ...";
+        }
+
+        TextView tv = view.findViewById(R.id.tvNote);
+        tv.setText(noteText);
 
     }
 }

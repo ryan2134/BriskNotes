@@ -29,10 +29,10 @@ public class MainActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        String[] from = {DBOpenHelper.NOTE_TEXT};
-        int[] to = {R.id.tvNote};
-        cursorAdapter = new SimpleCursorAdapter(this,
-                R.layout.note_list_item, null, from, to, 0);
+        //NotesCursorAdapter already knows where the data's coming from and where it's supposed to be displayed
+//        String[] from = {DBOpenHelper.NOTE_TEXT};
+//        int[] to = {R.id.tvNote};
+        cursorAdapter = new NoteCursorAdapter(this,null, 0);
 
         ListView list = (ListView) findViewById(R.id.list);
         list.setAdapter(cursorAdapter);
