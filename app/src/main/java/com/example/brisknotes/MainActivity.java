@@ -10,6 +10,7 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
@@ -112,6 +113,8 @@ public class MainActivity extends AppCompatActivity
         restartLoader();
     }
 
+    //Restarts the loader from the loader manager and refills the data from the database
+    //and displays it in the list
     private void restartLoader() {
         getLoaderManager().restartLoader(0, null, this);
     }
@@ -135,5 +138,14 @@ public class MainActivity extends AppCompatActivity
     public void openEditorForNewNote(View view) {
         Intent intent = new Intent(this, EditorActivity.class);
         startActivityForResult(intent, EDITOR_REQUEST_CODE);
+    }
+
+    //When the user completes the operation in the editor activity they'll press the back button
+    //or the up button to return to the main activity. And that'll trigger the method onActivityResult.
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        if (requestCode == EDITOR_REQUEST_CODE && resultCode == RESULT_OK){
+            restartLoader();
+        }
     }
 }

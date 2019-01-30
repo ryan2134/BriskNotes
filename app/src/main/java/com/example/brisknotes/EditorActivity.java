@@ -1,16 +1,34 @@
  package com.example.brisknotes;
 
+import android.content.ContentValues;
+import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.EditText;
 
  public class EditorActivity extends AppCompatActivity {
+
+     private String action;
+     //Represents the edit text object; the edit control that the user's typing into
+     private EditText editor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_editor);
+
+        editor = (EditText) findViewById(R.id.editText);
+        Intent intent = getIntent();
+        Uri uri = intent.getParcelableExtra(NoteProvider.CONTENT_ITEM_TYPE);
+        //If the URI is passed in it won't be null, if "insert" button pressed it will be null so
+        //we know to insert a new note
+        if(uri == null){
+            action = Intent.ACTION_INSERT;
+            setTitle(R.string.new_note);
+        }
     }
 
 
@@ -23,17 +41,46 @@ import android.view.MenuItem;
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-//        if (id == R.id.action_settings) {
-//            return true;
-//        }
+        switch (item.getItemId()){
+            //When the user presses the up button, the ID is always the same
+            case android.R.id.home:
+                finishEditing();
+                break;
+        }
 
-        return super.onOptionsItemSelected(item);
+        return true;
     }
-}
+
+    private void finishEditing(){
+        //trim to eliminate any leading whitespace
+        String newText = editor.getText().toString().trim();
+
+        switch (action){
+            case Intent.ACTION_INSERT:
+                if(newText.length() == 0){
+                    setResult(RESULT_CANCELED);
+                }
+                else{
+                    insertNote(newText);
+                }
+        }
+        finish();
+    }
+
+     private void insertNote(String noteText) {
+         ContentValues values = new ContentValues();
+         values.put(DBOpenHelper.NOTE_TEXT, noteText);
+         getContentResolver().insert(NoteProvider.CONTENT_URI, values);
+         setResult(RESULT_OK);
+     }
+
+     //Called when user touches the back button on the device
+     @Override
+     public void onBackPressed(){
+        finishEditing();
+     }
+
+ }
 
