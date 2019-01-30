@@ -10,12 +10,14 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.CursorAdapter;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
@@ -41,6 +43,14 @@ public class MainActivity extends AppCompatActivity
 
         ListView list = (ListView) findViewById(R.id.list);
         list.setAdapter(cursorAdapter);
+        list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(MainActivity.this, EditorActivity.class);
+                //Represents the PK value of the currently selected item from the list
+                Uri uri = Uri.parse(NoteProvider.CONTENT_URI + "/" + id);
+            }
+        });
 
         getLoaderManager().initLoader(0, null, this);
 

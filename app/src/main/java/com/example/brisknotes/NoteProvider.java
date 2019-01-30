@@ -41,6 +41,14 @@ public class NoteProvider extends ContentProvider{
 
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
+
+        //We got a URI ending with a numeric value, we only want a single row
+        if(uriMatcher.match(uri) == NOTES_ID){
+            //getLastPathSegment gets the numeric value just after the '/'; PK value
+            selection = DBOpenHelper.NOTE_ID + "=" + uri.getLastPathSegment();
+
+        }
+
         return database.query(DBOpenHelper.TABLE_NOTES, DBOpenHelper.ALL_COLUMNS,
                 selection, null, null, null,
                 DBOpenHelper.NOTE_CREATED + " DESC");
