@@ -14,13 +14,13 @@ import android.widget.Toast;
  public class EditorActivity extends AppCompatActivity {
 
      private String action;
-     //Represents the edit text object; the edit control that the user's typing into
+     // Represents the edit text object; the edit control that the user's typing into
      private EditText editor;
      private String noteFilter;
-     //Will contain the existing text of the selected note
+     // Will contain the existing text of the selected note
      private String oldText;
 
-     ////Called method when the Editor Activity is launched
+     // Called method when the Editor Activity is launched
      @Override
      protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,29 +29,29 @@ import android.widget.Toast;
         editor = findViewById(R.id.editText);
         Intent intent = getIntent();
         Uri uri = intent.getParcelableExtra(NoteProvider.CONTENT_ITEM_TYPE);
-        //If the URI is passed in it won't be null, if "insert" button pressed it will be null so
-        //we know to insert a new note
+        // If the URI is passed in it won't be null, if "insert" button pressed it will be null so
+        // we know to insert a new note
         if(uri == null){
             action = Intent.ACTION_INSERT;
             setTitle(R.string.new_note);
         }
-        //URI is not null, we now know what we want to edit a note
+        // URI is not null, we now know what we want to edit a note
         else{
             action = Intent.ACTION_EDIT;
             noteFilter = DBOpenHelper.NOTE_ID + "=" + uri.getLastPathSegment();
-            //Retrieving the one row from the Database
-            //Cursor that gives access to the one record that matched the requested PK value
+            // Retrieving the one row from the Database
+            // Cursor that gives access to the one record that matched the requested PK value
             Cursor cursor = getContentResolver().query(uri, DBOpenHelper.ALL_COLUMNS, noteFilter,
                     null, null);
             cursor.moveToFirst();
             oldText = cursor.getString(cursor.getColumnIndex(DBOpenHelper.NOTE_TEXT));
             editor.setText(oldText);
-            //Moves the cursor to the end of the existing text
+            // Moves the cursor to the end of the existing text
             editor.requestFocus();
         }
      }
 
-     //Deals with the app bar icons/buttons that are displayed/inflated
+     // Deals with the app bar icons/buttons that are displayed/inflated
      @Override
      public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds the delete icon to the action bar for existing notes
@@ -61,13 +61,13 @@ import android.widget.Toast;
         return true;
      }
 
-     //Handles when the user interacts with the app bar buttons
+     // Handles when the user interacts with the app bar buttons
      @Override
      public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
         switch (id){
-            //When the user presses the up button, the ID is always the same
+            // When the user presses the up button, the ID is always the same
             case android.R.id.home:
                 finishEditing();
                 break;
@@ -80,7 +80,7 @@ import android.widget.Toast;
         return true;
      }
 
-    //Method that only deletes one note that the user has selected
+    // Method that only deletes one note that the user has selected
      private void deleteNote() {
         getContentResolver().delete(NoteProvider.CONTENT_URI, noteFilter, null);
         Toast.makeText(this, getString(R.string.note_deleted), Toast.LENGTH_SHORT).show();
@@ -88,9 +88,9 @@ import android.widget.Toast;
         finish();
      }
 
-     //This method is called when user is finished with editing a note and handles different exits
+     // This method is called when user is finished with editing a note and handles different exits
      private void finishEditing(){
-        //trim to eliminate any leading whitespace
+        // trim() to eliminate any leading whitespace
         String newText = editor.getText().toString().trim();
 
         switch (action){
@@ -116,17 +116,17 @@ import android.widget.Toast;
         finish();
     }
 
-    //Given an existing note, will update any changes that have been made by the user
+    // Given an existing note, will update any changes that have been made by the user
      private void updateNote(String noteText) {
          ContentValues values = new ContentValues();
          values.put(DBOpenHelper.NOTE_TEXT, noteText);
-         //noteFilter value used to only update the one selected row
+         // noteFilter value used to only update the one selected row
          getContentResolver().update(NoteProvider.CONTENT_URI, values, noteFilter, null);
          Toast.makeText(this, getString(R.string.note_updated), Toast.LENGTH_SHORT).show();
          setResult(RESULT_OK);
      }
 
-     //Inserts a single note into the database and returns that it has been successful
+     // Inserts a single note into the database and returns that it has been successful
      private void insertNote(String noteText) {
          ContentValues values = new ContentValues();
          values.put(DBOpenHelper.NOTE_TEXT, noteText);
@@ -134,7 +134,7 @@ import android.widget.Toast;
          setResult(RESULT_OK);
      }
 
-     //Called when user touches the back button on the device
+     // Called when user touches the back button on the device
      @Override
      public void onBackPressed(){
         finishEditing();

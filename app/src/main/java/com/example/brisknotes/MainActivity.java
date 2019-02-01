@@ -24,18 +24,18 @@ import android.widget.Toast;
 public class MainActivity extends AppCompatActivity
         implements LoaderManager.LoaderCallbacks<Cursor>
 {
-    //Arbitrary constant used to identify the request when we come back to Main activity
+    // Arbitrary constant used to identify the request when we come back to Main activity
     private static final int EDITOR_REQUEST_CODE = 1;
     private CursorAdapter cursorAdapter;
 
-    //Called method when the Main Activity is launched
+    // Called method when the Main Activity is launched
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        /*NotesCursorAdapter already knows where the data's
-        coming from and where it's supposed to be displayed */
+        /* NotesCursorAdapter already knows where the data's
+           coming from and where it's supposed to be displayed */
         cursorAdapter = new NoteCursorAdapter(this,null, 0);
 
         ListView list = findViewById(R.id.list);
@@ -44,7 +44,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Intent intent = new Intent(MainActivity.this, EditorActivity.class);
-                //Represents the PK value of the currently selected item from the list
+                // Represents the PK value of the currently selected item from the list
                 Uri uri = Uri.parse(NoteProvider.CONTENT_URI + "/" + id);
                 intent.putExtra(NoteProvider.CONTENT_ITEM_TYPE, uri);
                 startActivityForResult(intent, EDITOR_REQUEST_CODE);
@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    //Inserts the note as a Content Value via a Resolver
+    // Inserts the note as a Content Value via a Resolver
     private void insertNote(String noteText) {
         ContentValues values = new ContentValues();
         values.put(DBOpenHelper.NOTE_TEXT, noteText);
@@ -63,14 +63,14 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-    //Deals with the app bar icons/buttons that are displayed/inflated
+    // Deals with the app bar icons/buttons that are displayed/inflated
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
-    //Handles when the user interacts with the app bar buttons
+    // Handles when the user interacts with the app bar buttons
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
@@ -87,14 +87,14 @@ public class MainActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
-    //Deletes all the notes in the list and stored database
+    // Deletes all the notes in the list and stored database
     private void deleteAllNotes() {
         DialogInterface.OnClickListener dialogClickListener =
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int button) {
                         if (button == DialogInterface.BUTTON_POSITIVE) {
-                            //Insert Data management code here
+                            // Insert Data management code here
                             getContentResolver().delete(
                                     NoteProvider.CONTENT_URI, null, null
                             );
@@ -114,7 +114,7 @@ public class MainActivity extends AppCompatActivity
                 .show();
     }
 
-    //Tests how the UI handles different cases of notes
+    // Tests how the UI handles different cases of notes
     private void insertSampleData() {
         insertNote("Simple note");
         insertNote("Multi-line\nnote");
@@ -122,13 +122,13 @@ public class MainActivity extends AppCompatActivity
         restartLoader();
     }
 
-    //Restarts the loader from the loader manager and refills the data from the database
-    //and displays it in the list
+    // Restarts the loader from the loader manager and refills the data from the database
+    // and displays it in the list
     private void restartLoader() {
         getLoaderManager().restartLoader(0, null, this);
     }
 
-    //Called whenever data is needed from the Content Provider
+    // Called whenever data is needed from the Content Provider
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         return new CursorLoader(this, NoteProvider.CONTENT_URI,
@@ -149,15 +149,15 @@ public class MainActivity extends AppCompatActivity
         cursorAdapter.swapCursor(null);
     }
 
-    //Launches the Editor Activity when the user wants to edit a note
+    // Launches the Editor Activity when the user wants to edit a note
     public void openEditorForNewNote(View view) {
         Intent intent = new Intent(this, EditorActivity.class);
         startActivityForResult(intent, EDITOR_REQUEST_CODE);
     }
 
-    /*When the user completes the operation in the editor activity they'll press the back button
-      or the up button to return to the main activity. And that'll trigger the method
-      onActivityResult */
+    /* When the user completes the operation in the editor activity they'll press the back button
+       or the up button to return to the main activity. And that'll trigger the method
+       onActivityResult */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         if (requestCode == EDITOR_REQUEST_CODE && resultCode == RESULT_OK){

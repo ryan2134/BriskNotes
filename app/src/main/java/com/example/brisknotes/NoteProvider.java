@@ -21,17 +21,17 @@ public class NoteProvider extends ContentProvider{
     private static final UriMatcher uriMatcher =
             new UriMatcher(UriMatcher.NO_MATCH);
 
-    //Used to indicate that we are updating an existing code
+    // Used to indicate that we are updating an existing code
     public static final String CONTENT_ITEM_TYPE = "Note";
 
-    //static initializer executed first time anything is called from this class
+    // Static initializer executed first time anything is called from this class
     static {
         uriMatcher.addURI(AUTHORITY, BASE_PATH, NOTES);
         uriMatcher.addURI(AUTHORITY, BASE_PATH +  "/#", NOTES_ID);
     }
     private SQLiteDatabase database;
 
-    //Called method when the Note Provider is launched
+    // Called method when the Note Provider is launched
     @Override
     public boolean onCreate() {
 
@@ -45,9 +45,9 @@ public class NoteProvider extends ContentProvider{
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
 
-        //We got a URI ending with a numeric value, we only want a single row
+        // We got a URI ending with a numeric value, we only want a single row
         if(uriMatcher.match(uri) == NOTES_ID){
-            //getLastPathSegment gets the numeric value just after the '/'; PK value
+            // getLastPathSegment gets the numeric value just after the '/'; PK value
             selection = DBOpenHelper.NOTE_ID + "=" + uri.getLastPathSegment();
 
         }
@@ -57,7 +57,7 @@ public class NoteProvider extends ContentProvider{
                 DBOpenHelper.NOTE_CREATED + " DESC");
     }
 
-    //Standard override method that needs to be implemented
+    // Standard override method that needs to be implemented
     @Override
     public String getType(Uri uri) {
         return null;
@@ -78,7 +78,7 @@ public class NoteProvider extends ContentProvider{
         return database.delete(DBOpenHelper.TABLE_NOTES, selection, selectionArgs);
     }
 
-    //Essentially the same as the Delete method but instead just updates the items in the database
+    // Essentially the same as the Delete method but instead just updates the items in the database
     @Override
     public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
         return database.update(DBOpenHelper.TABLE_NOTES, values, selection, selectionArgs);
