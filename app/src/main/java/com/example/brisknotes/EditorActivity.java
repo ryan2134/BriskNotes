@@ -20,6 +20,7 @@ import android.widget.Toast;
      //Will contain the existing text of the selected note
      private String oldText;
 
+     ////Called method when the Editor Activity is launched
      @Override
      protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,7 +51,7 @@ import android.widget.Toast;
         }
      }
 
-
+     //Deals with the app bar icons/buttons that are displayed/inflated
      @Override
      public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds the delete icon to the action bar for existing notes
@@ -60,6 +61,7 @@ import android.widget.Toast;
         return true;
      }
 
+     //Handles when the user interacts with the app bar buttons
      @Override
      public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
@@ -86,6 +88,7 @@ import android.widget.Toast;
         finish();
      }
 
+     //This method is called when user is finished with editing a note and handles different exits
      private void finishEditing(){
         //trim to eliminate any leading whitespace
         String newText = editor.getText().toString().trim();
@@ -113,6 +116,7 @@ import android.widget.Toast;
         finish();
     }
 
+    //Given an existing note, will update any changes that have been made by the user
      private void updateNote(String noteText) {
          ContentValues values = new ContentValues();
          values.put(DBOpenHelper.NOTE_TEXT, noteText);
@@ -122,6 +126,7 @@ import android.widget.Toast;
          setResult(RESULT_OK);
      }
 
+     //Inserts a single note into the database and returns that it has been successful
      private void insertNote(String noteText) {
          ContentValues values = new ContentValues();
          values.put(DBOpenHelper.NOTE_TEXT, noteText);

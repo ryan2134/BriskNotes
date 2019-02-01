@@ -24,13 +24,14 @@ public class NoteProvider extends ContentProvider{
     //Used to indicate that we are updating an existing code
     public static final String CONTENT_ITEM_TYPE = "Note";
 
+    //static initializer executed first time anything is called from this class
     static {
         uriMatcher.addURI(AUTHORITY, BASE_PATH, NOTES);
         uriMatcher.addURI(AUTHORITY, BASE_PATH +  "/#", NOTES_ID);
     }
-
     private SQLiteDatabase database;
 
+    //Called method when the Note Provider is launched
     @Override
     public boolean onCreate() {
 
@@ -39,6 +40,8 @@ public class NoteProvider extends ContentProvider{
         return true;
     }
 
+    /* Obtains the data from the database table notes, all notes or just a single row
+       Need to specify which columns to retrieve */
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
 
@@ -54,26 +57,30 @@ public class NoteProvider extends ContentProvider{
                 DBOpenHelper.NOTE_CREATED + " DESC");
     }
 
+    //Standard override method that needs to be implemented
     @Override
     public String getType(Uri uri) {
         return null;
     }
 
+    /* Returns a URI
+       Parse method allows for us to put together a string and return the equivalent URI */
     @Override
     public Uri insert(Uri uri, ContentValues values) {
-        long id = database.insert(DBOpenHelper.TABLE_NOTES,
-                null, values);
+        long id = database.insert(DBOpenHelper.TABLE_NOTES, null, values);
         return Uri.parse(BASE_PATH + "/" + id);
     }
 
+    /* Returns the result of calling the Delete method from the database object
+       Returns an int which represents the number of rows deleted */
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
         return database.delete(DBOpenHelper.TABLE_NOTES, selection, selectionArgs);
     }
 
+    //Essentially the same as the Delete method but instead just updates the items in the database
     @Override
     public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
-        return database.update(DBOpenHelper.TABLE_NOTES,
-                values, selection, selectionArgs);
+        return database.update(DBOpenHelper.TABLE_NOTES, values, selection, selectionArgs);
     }
 }

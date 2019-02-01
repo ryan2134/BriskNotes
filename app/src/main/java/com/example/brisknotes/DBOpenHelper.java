@@ -6,7 +6,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 
 public class DBOpenHelper extends SQLiteOpenHelper{
 
-    //Constants for db name and version
+    //Constants for database name and version
     private static final String DATABASE_NAME = "notes.db";
     private static final int DATABASE_VERSION = 1;
 
@@ -27,15 +27,19 @@ public class DBOpenHelper extends SQLiteOpenHelper{
                     NOTE_CREATED + " TEXT default CURRENT_TIMESTAMP" +
                     ")";
 
+    //Constructor from the super class
     public DBOpenHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
+    //Called method when DPOpenHelper is called
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(TABLE_CREATE);
     }
 
+    /*This method is called when the database version is changed and the user opens the
+      app for the first time after that happens */
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_NOTES);
