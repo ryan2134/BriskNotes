@@ -19,8 +19,9 @@ import android.widget.Toast;
      private String noteFilter;
      //Will contain the existing text of the selected note
      private String oldText;
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
+
+     @Override
+     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_editor);
 
@@ -47,18 +48,20 @@ import android.widget.Toast;
             //Moves the cursor to the end of the existing text
             editor.requestFocus();
         }
-    }
+     }
 
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-//        getMenuInflater().inflate(R.menu.menu_editor, menu);
+     @Override
+     public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds the delete icon to the action bar for existing notes
+        if(action.equals(Intent.ACTION_EDIT)){
+            getMenuInflater().inflate(R.menu.menu_editor, menu);
+        }
         return true;
-    }
+     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+     @Override
+     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
         switch (item.getItemId()){
@@ -66,12 +69,24 @@ import android.widget.Toast;
             case android.R.id.home:
                 finishEditing();
                 break;
+            case R.id.action_delete:
+                deleteNote();
+                break;
         }
 
-        return true;
-    }
 
-    private void finishEditing(){
+        return true;
+     }
+
+    //Method that only deletes one note that the user has selected
+     private void deleteNote() {
+        getContentResolver().delete(NoteProvider.CONTENT_URI, noteFilter, null);
+        Toast.makeText(this, getString(R.string.note_deleted), Toast.LENGTH_SHORT).show();
+        setResult(RESULT_OK);
+        finish();
+     }
+
+     private void finishEditing(){
         //trim to eliminate any leading whitespace
         String newText = editor.getText().toString().trim();
 
@@ -86,7 +101,7 @@ import android.widget.Toast;
                 break;
             case Intent.ACTION_EDIT:
                 if(newText.length() == 0){
-//                    deleteNote();
+                    deleteNote();
                 }
                 else if(oldText.equals(newText)){
                     setResult(RESULT_CANCELED);
