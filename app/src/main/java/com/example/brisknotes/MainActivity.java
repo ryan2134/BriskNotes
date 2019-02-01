@@ -49,6 +49,8 @@ public class MainActivity extends AppCompatActivity
                 Intent intent = new Intent(MainActivity.this, EditorActivity.class);
                 //Represents the PK value of the currently selected item from the list
                 Uri uri = Uri.parse(NoteProvider.CONTENT_URI + "/" + id);
+                intent.putExtra(NoteProvider.CONTENT_ITEM_TYPE, uri);
+                startActivityForResult(intent, EDITOR_REQUEST_CODE);
             }
         });
 
