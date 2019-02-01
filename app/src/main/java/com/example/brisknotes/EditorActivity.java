@@ -25,7 +25,7 @@ import android.widget.Toast;
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_editor);
 
-        editor = (EditText) findViewById(R.id.editText);
+        editor = findViewById(R.id.editText);
         Intent intent = getIntent();
         Uri uri = intent.getParcelableExtra(NoteProvider.CONTENT_ITEM_TYPE);
         //If the URI is passed in it won't be null, if "insert" button pressed it will be null so
@@ -64,7 +64,7 @@ import android.widget.Toast;
      public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        switch (item.getItemId()){
+        switch (id){
             //When the user presses the up button, the ID is always the same
             case android.R.id.home:
                 finishEditing();

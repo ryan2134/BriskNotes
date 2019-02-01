@@ -10,17 +10,14 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.ContactsContract;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.CursorAdapter;
 import android.widget.ListView;
-import android.widget.SimpleCursorAdapter;
 import android.widget.Toast;
 
 
@@ -41,7 +38,7 @@ public class MainActivity extends AppCompatActivity
 //        int[] to = {R.id.tvNote};
         cursorAdapter = new NoteCursorAdapter(this,null, 0);
 
-        ListView list = (ListView) findViewById(R.id.list);
+        ListView list = findViewById(R.id.list);
         list.setAdapter(cursorAdapter);
         list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -63,7 +60,6 @@ public class MainActivity extends AppCompatActivity
         values.put(DBOpenHelper.NOTE_TEXT, noteText);
         Uri noteUri = getContentResolver().insert(NoteProvider.CONTENT_URI,
                 values);
-        Log.d("MainActivity", "Inserted note " + noteUri.getLastPathSegment());
     }
 
 
